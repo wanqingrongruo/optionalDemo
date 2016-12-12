@@ -66,3 +66,47 @@ case nil:
 // optional chaining => value?.
 // nil coalescing => value ?? default
 
+let stringOnes: [String] = ["1", "one", "100"]
+let intOnes = stringOnes.map { (str) -> Int? in
+   return Int(str)
+}
+// 迭代器
+var i = intOnes.makeIterator()
+while let i = i.next() {
+    print(i ?? "nil")
+}
+
+// 改进 force unwrapping 的错误信息
+
+infix operator !!
+
+func !!<T>(optional: T?, errorMsg: @autoclosure () -> String) -> T {
+    
+    if let value = optional {
+        return value
+    }
+    
+    fatalError(errorMsg)
+}
+
+var record = ["name": "11"]
+//record["type"] !! "Do not have the name key"
+record["name"] !! "Do not have the name key"
+
+
+// 改进 force unwrapping 的安全性
+
+infix operator !?
+
+// assert仅在debug mode生效
+func !?<T: ExpressibleByStringLiteral>(optional: T?, nilDefault: @autoclosure () -> (errorMsg: String, value: T)) -> T{
+    
+    assert(optional != nil, nilDefault().errorMsg)
+    return optional ?? nilDefault().value
+}
+
+//record["type"] !? ("Do not have the name key", "Free")
+
+record["type"]?.write("aaa")
+
+
